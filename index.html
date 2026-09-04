@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <title>PlotBetter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="widget docked edge-right">
+  <div id="widget-root" class="widget-root docked edge-right">
+    <div id="app-shell" class="app-shell">
+      <header class="widget-chrome">
+        <div class="chrome-brand">
+          <span class="chrome-mark">◈</span>
+          <span class="chrome-title">PLOT_BETTER</span>
+          <span class="chrome-sub">// research_widget</span>
+        </div>
+        <div class="chrome-actions">
+          <button type="button" id="btn-widget-pin" class="chrome-btn" title="Pin open">📌</button>
+          <button type="button" id="btn-widget-dock" class="chrome-btn" title="Dock to screen edge">▸</button>
+        </div>
+      </header>
+      <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">PB</span>
+        <div>
+          <h1>PlotBetter</h1>
+          <p>Daily research companion</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="tasks">Tasks</button>
+        <button class="nav-btn" data-tab="daily">Daily Note</button>
+        <button class="nav-btn" data-tab="alltasks">All Tasks</button>
+        <button class="nav-btn" data-tab="finance">Finance</button>
+        <button class="nav-btn" data-tab="recipes">Recipes</button>
+        <button class="nav-btn" data-tab="paper">Today's Paper</button>
+        <button class="nav-btn" data-tab="quiz">Quiz</button>
+        <button class="nav-btn" data-tab="topics">Topics</button>
+        <button class="nav-btn" data-tab="settings">Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="btn-open-note" class="ghost-btn">Open in Notepad</button>
+        <button id="btn-refresh" class="ghost-btn">Refresh</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <section id="tab-tasks" class="tab active">
+        <header class="tasks-hero">
+          <div class="tasks-hero-glow" aria-hidden="true"></div>
+          <div class="tasks-hero-top">
+            <div class="tasks-hero-copy">
+              <p class="tasks-eyebrow">Home · Today</p>
+              <h2 id="tasks-greeting" class="tasks-greeting">Good morning</h2>
+              <p id="tasks-subline" class="tasks-subline muted">Loading tasks…</p>
+            </div>
+            <div class="tasks-progress-wrap" aria-label="Today's progress">
+              <svg class="tasks-progress-ring" viewBox="0 0 72 72">
+                <circle class="tasks-progress-track" cx="36" cy="36" r="30" />
+                <circle id="tasks-progress-arc" class="tasks-progress-arc" cx="36" cy="36" r="30" />
+              </svg>
+              <span id="tasks-progress-pct" class="tasks-progress-pct">0%</span>
+            </div>
+          </div>
+          <div class="tasks-stats">
+            <div class="tasks-stat tasks-stat-today">
+              <span id="stat-today-count" class="tasks-stat-value">0</span>
+              <span class="tasks-stat-label">Today</span>
+            </div>
+            <div class="tasks-stat tasks-stat-backlog">
+              <span id="stat-backlog-count" class="tasks-stat-value">0</span>
+              <span class="tasks-stat-label">Backlog</span>
+            </div>
+            <div class="tasks-stat tasks-stat-done">
+              <span id="stat-done-count" class="tasks-stat-value">0</span>
+              <span class="tasks-stat-label">Done</span>
+            </div>
+          </div>
+        </header>
+        <div class="tasks-layout">
+          <div class="tasks-panel tasks-panel-single">
+            <div class="panel-title">
+              <h3>Today</h3>
+              <span id="today-date-label" class="date-badge"></span>
+            </div>
+            <ul id="task-list-today" class="task-list"></ul>
+            <p id="tasks-empty" class="empty hidden">No tasks for today. Add one below.</p>
+            <div class="add-row">
+              <input type="text" id="new-task-input" class="inline-input" placeholder="Add a task for today..." />
+              <button id="btn-add-task" class="primary-btn">Add</button>
+            </div>
+          </div>
+
+          <div class="tasks-panel tasks-panel-backlog">
+            <div class="panel-title">
+              <h3>Backlog</h3>
+              <span class="date-badge backlog-badge">Anytime</span>
+            </div>
+            <p class="field-hint backlog-hint">Not tied to a date — complete to archive in All Tasks.</p>
+            <ul id="task-list-backlog" class="task-list"></ul>
+            <p id="backlog-empty" class="empty hidden">Backlog is clear.</p>
+            <div class="add-row">
+              <input type="text" id="new-backlog-input" class="inline-input" placeholder="Add to backlog..." />
+              <button id="btn-add-backlog" class="primary-btn">Add</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-daily" class="tab">
+        <header class="tab-header editor-header">
+          <div>
+            <h2>Daily Note</h2>
+            <p class="muted">Edit your daily note here — like a built-in notepad. Auto-saves as you type.</p>
+          </div>
+          <div class="editor-toolbar">
+            <span id="editor-status" class="editor-status">Saved</span>
+            <button id="btn-save-daily" class="primary-btn">Save</button>
+          </div>
+        </header>
+        <textarea id="daily-editor" class="daily-editor" spellcheck="false" placeholder="@topic: machine learning&#10;&#10;- [ ] Your first task"></textarea>
+        <p class="field-hint editor-hint">
+          Tips: <code>@topic: subject</code> for research topics · <code>- [ ] task</code> for todos · Ctrl+S to save
+        </p>
+      </section>
+
+      <section id="tab-alltasks" class="tab">
+        <header class="tab-header">
+          <h2>All Tasks</h2>
+          <p class="muted">Completed tasks grouped by date.</p>
+        </header>
+        <div id="task-history" class="task-history"></div>
+        <p id="history-empty" class="empty hidden">Completed tasks will appear here, grouped by date.</p>
+      </section>
+
+      <section id="tab-finance" class="tab">
+        <header class="tab-header">
+          <h2>收支记录</h2>
+          <p class="muted">记录支出与收入，查看历史与月度汇总。</p>
+        </header>
+
+        <div class="finance-toolbar">
+          <label for="finance-month">月份</label>
+          <input type="month" id="finance-month" class="inline-input finance-month-input" />
+        </div>
+
+        <div class="finance-summary">
+          <div class="finance-summary-card income">
+            <span class="finance-summary-label">月收入</span>
+            <span id="finance-income-total" class="finance-summary-value">¥0.00</span>
+          </div>
+          <div class="finance-summary-card expense">
+            <span class="finance-summary-label">月支出</span>
+            <span id="finance-expense-total" class="finance-summary-value">¥0.00</span>
+          </div>
+          <div class="finance-summary-card balance">
+            <span class="finance-summary-label">结余</span>
+            <span id="finance-balance-total" class="finance-summary-value">¥0.00</span>
+          </div>
+        </div>
+
+        <div class="finance-form">
+          <div class="finance-type-toggle">
+            <button type="button" id="finance-type-expense" class="finance-type-btn active" data-type="expense">支出</button>
+            <button type="button" id="finance-type-income" class="finance-type-btn" data-type="income">收入</button>
+          </div>
+          <div class="finance-form-row">
+            <input type="number" id="finance-amount" class="inline-input" placeholder="金额" min="0.01" step="0.01" />
+            <input type="text" id="finance-category" class="inline-input" placeholder="分类（如餐饮、工资）" />
+            <input type="date" id="finance-date" class="inline-input finance-date-input" />
+          </div>
+          <div class="add-row">
+            <input type="text" id="finance-note" class="inline-input" placeholder="备注（可选）" />
+            <button id="btn-add-transaction" class="primary-btn">添加</button>
+          </div>
+        </div>
+
+        <div id="finance-history" class="task-history finance-history"></div>
+        <p id="finance-empty" class="empty hidden">本月还没有记录，在上方添加第一笔吧。</p>
+      </section>
+
+      <section id="tab-recipes" class="tab">
+        <header class="tab-header">
+          <h2>Recipes</h2>
+          <p class="muted">4×2 card grid · hover to preview · click to edit</p>
+        </header>
+        <div id="recipe-scroll" class="recipe-scroll">
+          <div id="recipe-grid" class="recipe-grid"></div>
+        </div>
+        <p id="recipe-empty-hint" class="empty hidden">No recipes yet. Click the + card to add your first one.</p>
+      </section>
+
+      <div id="recipe-editor" class="recipe-editor hidden" aria-hidden="true">
+        <div class="recipe-editor-backdrop"></div>
+        <div class="recipe-editor-panel" role="dialog" aria-labelledby="recipe-editor-title">
+          <header class="recipe-editor-header">
+            <input type="text" id="recipe-editor-name" class="recipe-editor-name" placeholder="Recipe name" />
+            <div class="recipe-editor-actions">
+              <button type="button" id="btn-recipe-delete" class="ghost-btn recipe-delete-btn">Delete</button>
+              <button type="button" id="btn-recipe-save" class="primary-btn">Save</button>
+              <button type="button" id="btn-recipe-close" class="ghost-btn">Close</button>
+            </div>
+          </header>
+          <div id="recipe-editor-fields" class="recipe-editor-fields"></div>
+          <button type="button" id="btn-recipe-add-field" class="ghost-btn recipe-add-field-btn">+ Add field</button>
+        </div>
+      </div>
+
+      <section id="tab-paper" class="tab">
+        <header class="tab-header">
+          <h2>Today's Paper</h2>
+          <p class="muted">One paper per topic per day — auto-recommended, manually assigned, or continued from yesterday.</p>
+        </header>
+        <div class="row">
+          <label for="paper-topic">Topic</label>
+          <select id="paper-topic"></select>
+          <button id="btn-load-paper" class="primary-btn">Load</button>
+        </div>
+        <div id="paper-resume-banner" class="paper-resume-banner hidden">
+          <div class="paper-resume-text">
+            <strong id="paper-resume-title">Unfinished paper</strong>
+            <p id="paper-resume-desc" class="muted"></p>
+          </div>
+          <div class="paper-resume-actions">
+            <button type="button" id="btn-continue-paper" class="primary-btn">Continue reading</button>
+            <button type="button" id="btn-new-paper-today" class="ghost-btn">New recommendation</button>
+          </div>
+        </div>
+        <div class="paper-assign-row">
+          <label for="paper-arxiv-input" class="sr-only">arXiv ID or URL</label>
+          <input type="text" id="paper-arxiv-input" class="inline-input" placeholder="arXiv ID or URL (e.g. 2406.09246)" />
+          <label for="paper-assign-date">For</label>
+          <select id="paper-assign-date" class="inline-select">
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+          </select>
+          <button type="button" id="btn-assign-paper" class="ghost-btn">Set paper</button>
+        </div>
+        <div id="paper-card" class="paper-card hidden">
+          <div class="paper-card-meta">
+            <p class="paper-label" id="paper-label">Recommended for you</p>
+            <span id="paper-read-badge" class="paper-read-badge hidden"></span>
+          </div>
+          <p id="paper-date-line" class="muted paper-date-line hidden"></p>
+          <h3 id="paper-title"></h3>
+          <p id="paper-authors" class="muted"></p>
+          <p id="paper-why" class="why"></p>
+          <div id="paper-takeaways" class="takeaways"></div>
+          <p id="paper-abstract" class="abstract"></p>
+          <div class="actions">
+            <button id="btn-open-zotero" class="primary-btn zotero-btn">View PDF in Zotero</button>
+            <button id="btn-open-paper" class="ghost-btn">Open on arXiv</button>
+            <button class="rate-btn" data-rate="too_hard">Too hard</button>
+            <button class="rate-btn" data-rate="just_right">Just right</button>
+            <button class="rate-btn" data-rate="too_easy">Too easy</button>
+          </div>
+          <p id="paper-zotero-msg" class="muted hidden"></p>
+          <p id="paper-zotero-hint" class="field-hint hidden">PDF 保存到 <code>data/daily_paper</code>；默认以 Stored 方式写入 Zotero，便于其他设备同步下载。</p>
+        </div>
+        <p id="paper-loading" class="muted hidden">Fetching from arXiv...</p>
+        <p id="paper-error" class="error hidden"></p>
+      </section>
+
+      <section id="tab-quiz" class="tab">
+        <header class="tab-header">
+          <h2>Cognitive Quiz</h2>
+          <p class="muted">Answer one question to update your level (1–5) for a topic.</p>
+        </header>
+        <div class="row">
+          <label for="quiz-topic">Topic</label>
+          <select id="quiz-topic"></select>
+          <button id="btn-load-quiz" class="primary-btn">New question</button>
+        </div>
+        <div id="quiz-card" class="quiz-card hidden">
+          <p id="quiz-hint" class="muted"></p>
+          <h3 id="quiz-question"></h3>
+          <div id="quiz-options" class="quiz-options"></div>
+          <p id="quiz-result" class="quiz-result hidden"></p>
+        </div>
+        <p id="quiz-empty" class="empty">Select a topic and click "New question".</p>
+      </section>
+
+      <section id="tab-settings" class="tab">
+        <header class="tab-header">
+          <h2>Settings</h2>
+          <p class="muted">Widget, Zotero, and other preferences.</p>
+        </header>
+
+        <div class="settings-card">
+          <h3>Startup</h3>
+          <label class="check-row">
+            <input type="checkbox" id="set-auto-launch" />
+            <span>Launch PlotBetter when Windows starts</span>
+          </label>
+          <p class="field-hint">勾选后立即生效。启动后仅托盘运行；<strong>双击托盘图标</strong>或右键「Show PlotBetter」打开完整界面。关闭窗口回到托盘，不退出。</p>
+          <p id="auto-launch-status" class="field-hint muted"></p>
+        </div>
+
+        <div class="settings-card" style="margin-top: 16px;">
+          <h3>Floating widget</h3>
+          <p class="field-hint" style="margin-bottom: 12px;">Docked to the screen edge when idle. Hover the rail to expand; pin to keep open.</p>
+          <div class="field">
+            <label for="set-widget-edge">Dock edge</label>
+            <select id="set-widget-edge" class="inline-select">
+              <option value="right">Right</option>
+              <option value="left">Left</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-card" style="margin-top: 16px;">
+          <h3>Quiz</h3>
+          <div class="field">
+            <label for="set-quiz-language">Question language</label>
+            <select id="set-quiz-language" class="inline-select">
+              <option value="auto">Auto — bilingual at level 1–2, English at level 3+</option>
+              <option value="bi-ch&en">Bi Ch&amp;En — always bilingual</option>
+              <option value="eng-only">Eng-only — English only</option>
+            </select>
+            <p class="field-hint">Auto: level 1–2 显示中英双语；level 3+ 仅英文。与 Topics 中的认知等级联动。</p>
+          </div>
+        </div>
+
+        <div class="settings-card" style="margin-top: 16px;">
+          <h3>Zotero</h3>
+
+          <label class="check-row">
+            <input type="checkbox" id="set-zotero-enabled" />
+            <span>Enable Zotero integration</span>
+          </label>
+
+          <div id="zotero-options" class="zotero-options hidden">
+            <label class="check-row">
+              <input type="checkbox" id="set-zotero-skip" checked />
+              <span>Skip papers already in my Zotero library when recommending</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="set-zotero-auto" />
+              <span>Auto-add to Zotero when I click "Just right"</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="set-zotero-link-open" checked />
+              <span>After opening PDF, sync entry to Zotero library in background (can disable for faster open)</span>
+            </label>
+            <div class="field">
+              <label for="set-zotero-attachment-mode">PDF attachment mode</label>
+              <select id="set-zotero-attachment-mode" class="inline-select">
+                <option value="stored">Stored in Zotero (sync to other devices)</option>
+                <option value="linked">Linked local file (no Zotero file sync)</option>
+              </select>
+              <p class="field-hint">
+                <strong>Stored</strong>（推荐）：PDF 写入 Zotero storage，可通过 Zotero 文件同步在其他设备下载打开。<br />
+                <strong>Linked</strong>：只保存本机绝对路径，其他设备会提示「基本目录不正确」；仅当你已在双端设置
+                Linked Attachment Base Directory 并用网盘同步该目录时使用。
+              </p>
+            </div>
+
+            <div class="field">
+              <label for="set-zotero-userid">Zotero User ID</label>
+              <input type="text" id="set-zotero-userid" placeholder="e.g. 12345678" />
+              <p class="field-hint">
+                Find at
+                <a href="#" id="link-zotero-keys" class="text-link">zotero.org/settings/keys</a>
+                (opens in browser)
+              </p>
+            </div>
+
+            <div class="field">
+              <label for="set-zotero-apikey">Zotero API Key</label>
+              <input type="password" id="set-zotero-apikey" placeholder="API key with library write access" />
+              <p class="field-hint">Create a key with <strong>Allow library write access</strong> to use "Add to Zotero".</p>
+            </div>
+
+            <div class="field">
+              <label for="set-zotero-datadir">Zotero data folder (local library)</label>
+              <div class="row">
+                <input type="text" id="set-zotero-datadir" class="path-input" placeholder="D:\Zotero" />
+                <button id="btn-browse-zotero" class="ghost-btn">Browse</button>
+              </div>
+              <p class="field-hint">Optional. Folder containing <code>zotero.sqlite</code> — <strong>not</strong> the folder with <code>zotero.exe</code>. Leave empty to use Zotero API only.</p>
+              <p class="field-hint">打开 PDF 更快：在 Zotero → 设置 → 高级 → 勾选 <strong>Allow other applications on this computer to communicate with Zotero</strong>。</p>
+            </div>
+
+            <div class="field">
+              <label for="set-zotero-collection">Daily paper collection</label>
+              <input type="text" id="set-zotero-collection" placeholder="daily_paper" />
+              <p class="field-hint">Zotero folder for papers opened from <strong>View in Zotero</strong>. Created automatically if missing.</p>
+            </div>
+
+            <div class="row">
+              <button id="btn-save-settings" class="primary-btn">Save settings</button>
+              <button id="btn-test-zotero" class="ghost-btn">Test Zotero</button>
+            </div>
+            <p class="field-hint">点击「Test Zotero」检查 API 与 Local API 是否正常（需先勾选上方 Enable Zotero integration）。</p>
+            <pre id="zotero-test-result" class="test-result hidden"></pre>
+          </div>
+        </div>
+
+        <p id="settings-saved" class="quiz-result ok hidden">Settings saved.</p>
+      </section>
+
+      <section id="tab-topics" class="tab">
+        <header class="tab-header">
+          <h2>Your Topics</h2>
+          <p class="muted">Manage research topics — used for paper push and quizzes.</p>
+        </header>
+        <ul id="topic-list" class="topic-list"></ul>
+        <p id="topics-empty" class="empty hidden">No topics yet. Add one below or write <code>@topic: ...</code> in Daily Note.</p>
+        <div class="add-row">
+          <input type="text" id="new-topic-input" class="inline-input" placeholder="e.g. machine learning" />
+          <button id="btn-add-topic" class="primary-btn">Add topic</button>
+        </div>
+      </section>
+    </main>
+      </div>
+    </div>
+
+    <aside id="dock-rail" class="dock-rail" title="PlotBetter — hover to open">
+      <div class="dock-chip">
+        <span class="dock-glow" aria-hidden="true"></span>
+        <span class="dock-mark">PB</span>
+        <span class="dock-chevron" aria-hidden="true"></span>
+      </div>
+    </aside>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>

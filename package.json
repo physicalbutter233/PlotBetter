@@ -1,0 +1,20 @@
+{
+  "name": "plotbetter",
+  "version": "0.1.0",
+  "description": "Daily notepad companion — tasks, paper push, cognitive quiz",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.1"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "fast-xml-parser": "^4.5.1",
+    "sql.js": "^1.12.0"
+  }
+}
